@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Login - MediVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2 class="form-title">Patient Login</h2>
+        <form method="POST" class="form">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required 
+                       placeholder="your.email@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required 
+                       placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+
+        <div class="form-footer">
+            <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+            <p>Are you a doctor? <a href="{{ url_for('doctor_login') }}">Doctor Login</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}Prescription - MediVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header">
+        <div>
+            <h2>Prescription Details</h2>
+        </div>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="prescription-detail-container">
+        <!-- Prescription Header -->
+        <div class="prescription-header-card">
+            <div class="prescription-logo">
+                <h1 style="color: var(--primary-color); margin: 0;">℞</h1>
+                <p style="color: var(--text-color); font-size: 1.2rem; font-weight: 600; margin: 0;">Medical Prescription</p>
+            </div>
+            <div class="prescription-date-badge">
+                <span style="font-size: 0.9rem; color: var(--text-color);">Date</span>
+                <span style="font-size: 1.3rem; font-weight: 700; color: var(--primary-color);">
+                    {{ prescription.prescription_date.strftime('%b %d, %Y') }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Doctor and Hospital Info -->
+        <div class="prescription-info-card">
+            <div class="info-section">
+                <h3>👨‍⚕️ Prescribed By</h3>
+                <p class="doctor-name">{{ prescription.doctor_name }}</p>
+                <p class="hospital-name">{{ prescription.hospital }}</p>
+            </div>
+            <div class="info-section">
+                <h3>📅 Prescription Information</h3>
+                <div class="info-grid">
+                    <div>
+                        <span class="info-label">Prescribed On:</span>
+                        <span class="info-value">{{ prescription.prescription_date.strftime('%B %d, %Y') }}</span>
+                    </div>
+                    <div>
+                        <span class="info-label">Prescription ID:</span>
+                        <span class="info-value">#{{ prescription.id }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnosis -->
+        <div class="prescription-section">
+            <div class="section-header">
+                <h3>🔍 Diagnosis</h3>
+            </div>
+            <div class="section-content diagnosis-content">
+                <p>{{ prescription.diagnosis }}</p>
+            </div>
+        </div>
+
+        <!-- Medications -->
+        <div class="prescription-section">
+            <div class="section-header">
+                <h3>💊 Medications Prescribed</h3>
+            </div>
+            <div class="section-content medications-content">
+                <pre style="white-space: pre-wrap; font-family: 'Segoe UI', sans-serif; margin: 0;">{{ prescription.medications }}</pre>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        {% if prescription.instructions %}
+        <div class="prescription-section">
+            <div class="section-header">
+                <h3>📋 Additional Instructions</h3>
+            </div>
+            <div class="section-content instructions-content">
+                <pre style="white-space: pre-wrap; font-family: 'Segoe UI', sans-serif; margin: 0;">{{ prescription.instructions }}</pre>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="prescription-actions">
+            <button onclick="window.print()" class="btn btn-primary">
+                🖨️ Print Prescription
+            </button>
+            <!-- <button onclick="downloadPrescription()" class="btn" style="background-color: var(--secondary-color); color: white;">
+                📥 Download as PDF
+            </button> -->
+        </div>
+
+        <!-- Footer Note -->
+        <div class="prescription-footer">
+            <p>⚕️ <strong>Important:</strong> Follow the prescribed dosage and timing carefully. Do not skip doses or stop medication without consulting your doctor.</p>
+            <p style="margin-top: 0.5rem;">📞 For any queries or concerns, please contact your doctor or hospital.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.prescription-detail-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.prescription-header-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.prescription-logo {
+    text-align: left;
+}
+
+.prescription-logo h1 {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+}
+
+.prescription-date-badge {
+    background-color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.prescription-info-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.info-section h3 {
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.doctor-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0.5rem 0;
+}
+
+.hospital-name {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.info-grid > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.prescription-section {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.section-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1rem 1.5rem;
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-content {
+    padding: 2rem;
+    line-height: 1.8;
+}
+
+.diagnosis-content {
+    background-color: #fef3c7;
+    border-left: 4px solid #f59e0b;
+}
+
+.diagnosis-content p {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #92400e;
+    margin: 0;
+}
+
+.medications-content {
+    background-color: #dbeafe;
+    border-left: 4px solid var(--primary-color);
+}
+
+.medications-content pre {
+    color: #1e40af;
+    font-size: 1.05rem;
+    line-height: 2;
+}
+
+.instructions-content {
+    background-color: #d1fae5;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.instructions-content pre {
+    color: #065f46;
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+.prescription-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.prescription-actions .btn {
+    flex: 1;
+    min-width: 200px;
+}
+
+.prescription-footer {
+    background-color: #fef3c7;
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+    padding: 1.5rem;
+    color: #92400e;
+}
+
+.prescription-footer p {
+    margin: 0;
+    line-height: 1.8;
+}
+
+/* Print Styles */
+@media print {
+    .navbar, .dashboard-header, .prescription-actions, .footer {
+        display: none !important;
+    }
+    
+    .prescription-detail-container {
+        max-width: 100%;
+    }
+    
+    .prescription-section {
+        page-break-inside: avoid;
+    }
+    
+    body {
+        background: white;
+    }
+}
+
+@media (max-width: 768px) {
+    .prescription-header-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .prescription-logo {
+        text-align: center;
+    }
+    
+    .prescription-info-card {
+        grid-template-columns: 1fr;
+    }
+    
+    .prescription-actions {
+        flex-direction: column;
+    }
+    
+    .prescription-actions .btn {
+        min-width: 100%;
+    }
+}
+</style>
+
+<script>
+function downloadPrescription() {
+    // Simple print-to-PDF functionality
+    alert('Use your browser\'s Print dialog (Ctrl+P or Cmd+P) and select "Save as PDF" as the destination.');
+    window.print();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Registration - MediVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2 class="form-title">Register as a Verified Doctor</h2>
+        <form method="POST" class="form">
+            
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="specialization">Specialization *</label>
+                    <input type="text" id="specialization" name="specialization" required placeholder="e.g., Cardiologist, Neurologist">
+                </div>
+
+                <div class="form-group">
+                    <label for="license_number">Medical License Number *</label>
+                    <input type="text" id="license_number" name="license_number" required placeholder="Enter your license number">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="hospital">Hospital / Clinic *</label>
+                <input type="text" id="hospital" name="hospital" required placeholder="Enter hospital or clinic name">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input type="tel" id="phone" name="phone" required placeholder="+91 98765 43210">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required minlength="8" placeholder="Minimum 8 characters">
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password *</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" required>
+                    I confirm that all information provided is accurate and I agree to the Terms of Service.
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Register as Doctor</button>
+        </form>
+
+        <div class="form-footer">
+            <p>Already registered? <a href="{{ url_for('doctor_login') }}">Login here</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            alert('Passwords do not match!');
+        }
+    });
+</script>
+{% endblock %}

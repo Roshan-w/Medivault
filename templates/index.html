@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}MediVault - Your Digital Health Companion{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Welcome to MediVault</h1>
+            <p class="hero-subtitle">Your Complete Medical History in One Secure Place</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+                <a href="{{ url_for('login') }}" class="btn btn-secondary">Patient Login</a>
+                <a href="{{ url_for('doctor_login') }}" class="btn btn-secondary">Doctor Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="features">
+    <div class="container">
+        <h2 class="section-title">Why Choose MediVault?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure Storage</h3>
+                <p>Encryption ensures your medical data is always protected and private</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Always Accessible</h3>
+                <p>Access your complete medical history anytime, anywhere, from any device</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏥</div>
+                <h3>Hospital Transfer</h3>
+                <p>Seamlessly share records when switching hospitals or seeking second opinions</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Emergency Ready</h3>
+                <p>Critical information available instantly in emergency situations</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💊</div>
+                <h3>Prescription History</h3>
+                <p>Track all your prescriptions and medications in one organized place</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Complete Records</h3>
+                <p>Store lab reports, X-rays, MRIs, and all medical documents together</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="cta-section">
+    <div class="container">
+        <h2>Ready to Take Control of Your Health Records?</h2>
+        <p>Join thousands of patients who trust MediVault with their medical data</p>
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">Create Your Account</a>
+    </div>
+</div>
+{% endblock %}

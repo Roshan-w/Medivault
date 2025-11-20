@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Medical Record - MediVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="upload-container">
+        <div class="form-container">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 class="form-title">Upload Medical Record</h2>
+                <p style="color: var(--text-color);">
+                    Patient: <strong>{{ patient.name }}</strong> | ID: {{ patient.govt_id }}
+                </p>
+                <p style="color: var(--text-color); font-size: 0.9rem;">
+                    Uploaded by: Dr. {{ doctor.name }} | {{ doctor.hospital }}
+                </p>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" class="form">
+                <div class="form-group">
+                    <label for="record_type">Record Type *</label>
+                    <select id="record_type" name="record_type" required>
+                        <option value="">Select Record Type</option>
+                        <option value="Lab Report">Lab Report</option>
+                        <option value="X-Ray">X-Ray</option>
+                        <option value="MRI">MRI Scan</option>
+                        <option value="CT Scan">CT Scan</option>
+                        <option value="Ultrasound">Ultrasound</option>
+                        <option value="ECG">ECG/EKG</option>
+                        <option value="Blood Test">Blood Test</option>
+                        <option value="Urine Test">Urine Test</option>
+                        <option value="Biopsy Report">Biopsy Report</option>
+                        <option value="Pathology Report">Pathology Report</option>
+                        <option value="Discharge Summary">Discharge Summary</option>
+                        <option value="Surgery Report">Surgery Report</option>
+                        <option value="Consultation Notes">Consultation Notes</option>
+                        <option value="Vaccination">Vaccination Record</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="title">Title/Description *</label>
+                    <input type="text" id="title" name="title" required 
+                           placeholder="e.g., Complete Blood Count - Annual Checkup">
+                </div>
+
+                <div class="form-group">
+                    <label for="test_date">Test/Procedure Date *</label>
+                    <input type="date" id="test_date" name="test_date" required max="{{ today }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Clinical Notes (Optional)</label>
+                    <textarea id="description" name="description" rows="5" 
+                              placeholder="Enter clinical observations, test results summary, or any additional notes...&#10;&#10;Example:&#10;- Patient presented with symptoms of...&#10;- Test results show...&#10;- Recommended treatment..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="file">Upload File *</label>
+                    <div class="file-upload-area" onclick="document.getElementById('file').click()">
+                        <div class="upload-icon">📁</div>
+                        <p><strong>Click to upload</strong> or drag and drop</p>
+                        <p style="font-size: 0.9rem; color: #6b7280; margin-top: 0.5rem;">
+                            PDF, JPG, PNG, DICOM (Max 16MB)
+                        </p>
+                    </div>
+                    <input type="file" id="file" name="file" required accept=".pdf,.jpg,.jpeg,.png,.dcm">
+                    <p id="file-name" style="margin-top: 1rem; color: var(--primary-color); font-weight: 600;"></p>
+                </div>
+
+                <div style="background-color: #eff6ff; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid var(--primary-color);">
+                    <h4 style="color: var(--dark-color); margin-bottom: 0.5rem;">📋 Document Guidelines:</h4>
+                    <ul style="color: var(--text-color); margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+                        <li>Ensure patient information is clearly visible</li>
+                        <li>Images should be clear and legible</li>
+                        <li>PDF documents should be properly oriented</li>
+                        <li>Include all pages of multi-page reports</li>
+                        <li>Verify date and hospital/lab information</li>
+                    </ul>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        📤 Upload Record
+                    </button>
+                    <a href="{{ url_for('view_patient', patient_id=patient.id) }}" class="btn btn-secondary" style="flex: 1; text-align: center;">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+
+            <div style="margin-top: 2rem; padding: 1rem; background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px;">
+                <p style="color: #92400e; font-size: 0.9rem; margin: 0;">
+                    ⚠️ <strong>Privacy Notice:</strong> This document will be added to the patient's permanent record and will be immediately accessible to the patient. Ensure all information is accurate and complies with medical record standards.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set today's date as max and default
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('test_date').setAttribute('max', today);
+    document.getElementById('test_date').valueAsDate = new Date();
+    
+    // File upload feedback
+    document.getElementById('file').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name;
+        const fileSize = e.target.files[0]?.size;
+        if (fileName) {
+            const sizeMB = (fileSize / (1024 * 1024)).toFixed(2);
+            document.getElementById('file-name').textContent = `✓ Selected: ${fileName} (${sizeMB} MB)`;
+        }
+    });
+    
+    // Auto-resize textarea
+    document.querySelector('textarea').addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+    });
+</script>
+{% endblock %}

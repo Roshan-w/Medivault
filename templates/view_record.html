@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}View Record - MediVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header">
+        <div>
+            <h2>Medical Record Details</h2>
+        </div>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="records-section">
+        <div class="record-detail-card">
+            <div class="record-header">
+                <div>
+                    <span class="badge badge-{{ record.record_type|lower|replace(' ', '-') }}">{{ record.record_type }}</span>
+                    <h2 style="margin-top: 1rem;">{{ record.title }}</h2>
+                </div>
+            </div>
+
+            <div class="record-info-grid">
+                <div class="record-info-item">
+                    <span class="info-label">Test/Procedure Date:</span>
+                    <span class="info-value">{{ record.test_date.strftime('%B %d, %Y') }}</span>
+                </div>
+                <div class="record-info-item">
+                    <span class="info-label">Upload Date:</span>
+                    <span class="info-value">{{ record.upload_date.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                </div>
+                <div class="record-info-item">
+                    <span class="info-label">Uploaded By:</span>
+                    <span class="info-value">{{ record.uploaded_by }}</span>
+                </div>
+                <div class="record-info-item">
+                    <span class="info-label">Record Type:</span>
+                    <span class="info-value">{{ record.record_type }}</span>
+                </div>
+            </div>
+
+            {% if record.description %}
+            <div class="record-description">
+                <h3>Description:</h3>
+                <p>{{ record.description }}</p>
+            </div>
+            {% endif %}
+
+            <div class="record-actions">
+                <a href="{{ url_for('download_record', record_id=record.id) }}" class="btn btn-primary">
+                    📥 Download File
+                </a>
+                <button onclick="if(confirm('Are you sure you want to delete this record?')) { document.getElementById('deleteForm').submit(); }" class="btn" style="background-color: var(--danger-color); color: white;">
+                    🗑️ Delete Record
+                </button>
+            </div>
+
+            <form id="deleteForm" method="POST" action="{{ url_for('delete_record', record_id=record.id) }}" style="display: none;">
+            </form>
+
+            <div class="record-preview">
+                <h3>File Preview:</h3>
+                {% if record.filename.lower().endswith(('.jpg', '.jpeg', '.png', '.gif')) %}
+                    <div class="image-preview">
+                        <img src="{{ url_for('serve_file', filename=record.filename.split('/')[-1]) }}" alt="{{ record.title }}" style="max-width: 100%; border-radius: 8px; box-shadow: var(--shadow);">
+                    </div>
+                {% elif record.filename.lower().endswith('.pdf') %}
+                    <div class="pdf-preview">
+                        <p style="color: var(--text-color); margin-bottom: 1rem;">
+                            📄 This is a PDF document. Click the download button above to view the full file.
+                        </p>
+                        <div style="padding: 3rem; background-color: var(--light-color); border-radius: 8px; text-align: center;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">📄</div>
+                            <p style="font-weight: 600; color: var(--dark-color);">{{ record.filename.split('/')[-1] }}</p>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="file-preview">
+                        <p style="color: var(--text-color);">
+                            📎 File preview not available. Click download to view the file.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="record-metadata">
+                <h3>File Information:</h3>
+                <div class="metadata-grid">
+                    <div class="metadata-item">
+                        <span class="info-label">Filename:</span>
+                        <span class="info-value">{{ record.filename.split('/')[-1] }}</span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="info-label">Record ID:</span>
+                        <span class="info-value">#{{ record.id }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.record-detail-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.record-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.record-header h2 {
+    color: var(--dark-color);
+    font-size: 2rem;
+}
+
+.record-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: var(--light-color);
+    border-radius: 8px;
+}
+
+.record-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.record-description {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: #eff6ff;
+    border-left: 4px solid var(--primary-color);
+    border-radius: 8px;
+}
+
+.record-description h3 {
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.record-description p {
+    color: var(--text-color);
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
+.record-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.record-preview {
+    margin-bottom: 2rem;
+}
+
+.record-preview h3 {
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.image-preview {
+    text-align: center;
+}
+
+.record-metadata {
+    padding: 1.5rem;
+    background-color: var(--light-color);
+    border-radius: 8px;
+}
+
+.record-metadata h3 {
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.metadata-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+</style>
+{% endblock %}

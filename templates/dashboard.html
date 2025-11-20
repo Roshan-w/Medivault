@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - MediVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Consent pending banner -->
+    {% if consent_pending_count and consent_pending_count > 0 %}
+      <div class="alert alert-info d-flex justify-content-between align-items-center" role="alert">
+        <div>
+          You have <strong>{{ consent_pending_count }}</strong> pending consent {{ 'request' if consent_pending_count==1 else 'requests' }} from doctors.
+        </div>
+        <a href="{{ url_for('patient_consents') }}" class="btn btn-sm btn-primary">Manage Consent</a>
+      </div>
+    {% endif %}
+
+    <div class="dashboard-header">
+        <h2>Welcome, {{ patient.name }}</h2>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('upload_record') }}" class="btn btn-primary">+ Upload New Record</a>
+            <a href="{{ url_for('patient_consents') }}" class="btn btn-outline-secondary">Manage Consents</a>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="info-card">
+            <h3>Personal Information</h3>
+            <div class="info-item">
+                <span class="info-label">Government ID:</span>
+                <span class="info-value">{{ patient.govt_id }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Date of Birth:</span>
+                <span class="info-value">{{ patient.dob.strftime('%B %d, %Y') if patient.dob else '—' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Blood Group:</span>
+                <span class="info-value">{{ patient.blood_group or 'Not specified' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ patient.email }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Phone:</span>
+                <span class="info-value">{{ patient.phone or '—' }}</span>
+            </div>
+        </div>
+
+        <div class="stats-card">
+            <h3>Health Records Summary</h3>
+            <div class="stat-item">
+                <div class="stat-number">{{ records|length }}</div>
+                <div class="stat-label">Medical Records</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ prescriptions|length }}</div>
+                <div class="stat-label">Prescriptions</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="records-section">
+        <h3>Recent Medical Records</h3>
+        {% if records %}
+            <div class="records-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Title</th>
+                            <th>Test Date</th>
+                            <th>Uploaded By</th>
+                            <th>Upload Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in records %}
+                        <tr>
+                            <td><span class="badge badge-{{ record.record_type|lower|replace(' ', '-') }}">{{ record.record_type }}</span></td>
+                            <td>{{ record.title }}</td>
+                            <td>{{ record.test_date.strftime('%Y-%m-%d') if record.test_date else '—' }}</td>
+                            <td>{{ record.uploaded_by or '—' }}</td>
+                            <td>{{ record.upload_date.strftime('%Y-%m-%d %H:%M') if record.upload_date else '—' }}</td>
+                            <td>
+                                <a href="{{ url_for('view_record', record_id=record.id) }}" class="btn btn-small">View</a>
+                                <a href="{{ url_for('download_record', record_id=record.id) }}" class="btn btn-small" style="background-color: var(--secondary-color);">Download</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>No medical records yet. Upload your first record to get started!</p>
+                <a href="{{ url_for('upload_record') }}" class="btn btn-primary">Upload Record</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="prescriptions-section">
+        <h3>Recent Prescriptions</h3>
+        {% if prescriptions %}
+            <div class="prescriptions-grid">
+                {% for prescription in prescriptions[:6] %}
+                <div class="prescription-card" onclick="window.location.href='{{ url_for('view_prescription', prescription_id=prescription.id) }}'" style="cursor: pointer;">
+                    <div class="prescription-header">
+                        <h4>{{ prescription.diagnosis }}</h4>
+                        <span class="prescription-date">{{ prescription.prescription_date.strftime('%b %d, %Y') if prescription.prescription_date else '—' }}</span>
+                    </div>
+                    <div class="prescription-body">
+                        <p><strong>Doctor:</strong> {{ prescription.doctor_name }}</p>
+                        <p><strong>Hospital:</strong> {{ prescription.hospital or '—' }}</p>
+                        <p><strong>Medications:</strong>
+                          {% set meds = prescription.medications or '' %}
+                          {{ meds[:100] }}{% if meds|length > 100 %}…{% endif %}
+                        </p>
+                        <div style="margin-top: 1rem; text-align: center;">
+                            <span class="btn btn-small">View Full Prescription</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>No prescriptions recorded yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

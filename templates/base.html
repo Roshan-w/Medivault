@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MediVault{% endblock %}</title>
+   
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                  <h1 class="logo">
+    <img src="{{ url_for('static', filename='images/MEDIVAULT2.png') }}" alt="MediVault Logo" class="logo-img">
+    MediVault
+</h1>
+            </div>
+            <ul class="nav-menu">
+                {% if session.user_type == 'patient' %}
+                    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('upload_record') }}">Upload Record</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout ({{ session.user_name }})</a></li>
+                {% elif session.user_type == 'doctor' %}
+                    <li><a href="{{ url_for('doctor_dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('search_patient') }}">Search Patient</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout (Dr. {{ session.doctor_name }})</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('login') }}">Patient Login</a></li>
+                    <li><a href="{{ url_for('doctor_login') }}">Doctor Login</a></li>
+                    <li><a href="{{ url_for('register') }}">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 MediVault - Unified Digital Health Record System</p>
+            <p>Secure • Accessible • Patient-Centric</p>
+        </div>
+    </footer>
+</body>
+</html>

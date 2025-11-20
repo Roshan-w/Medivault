@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Records - {{ patient.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header">
+        <div>
+            <h2>{{ patient.name }}'s Medical Records</h2>
+            <p style="color: var(--text-color); margin-top: 0.5rem;">Government ID: {{ patient.govt_id }}</p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{{ url_for('add_prescription', patient_id=patient.id) }}" class="btn btn-primary">+ Add Prescription</a>
+            <a href="{{ url_for('doctor_upload_record', patient_id=patient.id) }}" class="btn" style="background-color: var(--secondary-color); color: white;">+ Upload Record</a>
+            <a href="{{ url_for('search_patient') }}" class="btn btn-secondary">← Back to Search</a>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="info-card">
+            <h3>Patient Information</h3>
+            <div class="info-item">
+                <span class="info-label">Date of Birth:</span>
+                <span class="info-value">{{ patient.dob.strftime('%B %d, %Y') }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Age:</span>
+                <span class="info-value">{{ ((patient.dob - patient.dob).days / 365.25)|int }} years</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Blood Group:</span>
+                <span class="info-value">{{ patient.blood_group or 'Not specified' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Contact:</span>
+                <span class="info-value">{{ patient.phone }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ patient.email }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Emergency Contact:</span>
+                <span class="info-value">{{ patient.emergency_contact or 'Not provided' }}</span>
+            </div>
+        </div>
+
+        <div class="stats-card">
+            <h3>Quick Actions</h3>
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+                <a href="{{ url_for('add_prescription', patient_id=patient.id) }}" class="btn btn-primary" style="text-align: center;">
+                    ✍️ Write Prescription
+                </a>
+                <a href="{{ url_for('doctor_upload_record', patient_id=patient.id) }}" class="btn" style="background-color: var(--secondary-color); color: white; text-align: center;">
+                    📤 Upload Medical Record
+                </a>
+            </div>
+            <h3 style="margin-top: 1.5rem;">Medical Records Summary</h3>
+            <div class="stat-item">
+                <div class="stat-number">{{ records|length }}</div>
+                <div class="stat-label">Total Medical Records</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ prescriptions|length }}</div>
+                <div class="stat-label">Total Prescriptions</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="records-section">
+        <h3>Medical Records History</h3>
+        {% if records %}
+            <div class="records-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Title</th>
+                            <th>Test Date</th>
+                            <th>Uploaded By</th>
+                            <th>Upload Date</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in records %}
+                        <tr>
+                            <td><span class="badge badge-{{ record.record_type|lower|replace(' ', '-') }}">{{ record.record_type }}</span></td>
+                            <td>{{ record.title }}</td>
+                            <td>{{ record.test_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ record.uploaded_by }}</td>
+                            <td>{{ record.upload_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ record.description[:50] }}{% if record.description and record.description|length > 50 %}...{% endif %}</td>
+                            <td>
+                                <a href="{{ url_for('doctor_download_record', record_id=record.id) }}" class="btn btn-small">Download</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>No medical records available for this patient.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="prescriptions-section">
+        <h3>Prescription History</h3>
+        {% if prescriptions %}
+            <div class="prescriptions-grid">
+                {% for prescription in prescriptions %}
+                <div class="prescription-card">
+                    <div class="prescription-header">
+                        <h4>{{ prescription.diagnosis }}</h4>
+                        <span class="prescription-date">{{ prescription.prescription_date.strftime('%b %d, %Y') }}</span>
+                    </div>
+                    <div class="prescription-body">
+                        <p><strong>Prescribed by:</strong> {{ prescription.doctor_name }}</p>
+                        <p><strong>Hospital/Clinic:</strong> {{ prescription.hospital }}</p>
+                        <p><strong>Medications:</strong></p>
+                        <p style="white-space: pre-wrap; background-color: var(--light-color); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">{{ prescription.medications }}</p>
+                        {% if prescription.instructions %}
+                        <p style="margin-top: 1rem;"><strong>Instructions:</strong></p>
+                        <p style="white-space: pre-wrap;">{{ prescription.instructions }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>No prescription records available for this patient.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="info-card" style="margin-top: 2rem; background-color: #fef3c7; border: 1px solid #f59e0b;">
+        <p style="color: #92400e; font-weight: 600; margin: 0;">
+            ⚠️ Access Logged: Your access to this patient's records has been logged for security and compliance purposes.
+        </p>
+    </div>
+</div>
+{% endblock %}

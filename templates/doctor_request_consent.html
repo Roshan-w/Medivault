@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% block title %}Request Consent - MediVault{% endblock %}
+
+{% block content %}
+<div class="container py-4 consent-page">
+
+  <!-- Header -->
+  <div class="header-row">
+    <div>
+      <h2 class="page-title">Request Consent</h2>
+      <div class="page-subtitle">
+        Patient: <span class="highlight">{{ patient.name }}</span>
+        <span class="dot">•</span>
+        ID: <code class="patient-id">{{ patient.snowflake_id }}</code>
+      </div>
+    </div>
+    <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-light btn-sm">Back</a>
+  </div>
+
+  <!-- 2-column grid -->
+  <div class="layout">
+
+    <!-- Left: Form -->
+    <div class="left-panel">
+      <div class="card shadow-sm form-card">
+        <div class="card-body">
+          <h5 class="section-title">Create a Consent Request</h5>
+
+          <form method="post" class="needs-validation" novalidate>
+
+            <div class="form-group mb-3">
+              <label class="form-label">Purpose for Access <span class="text-danger">*</span></label>
+              <textarea name="purpose" rows="3" class="form-control" required
+                        placeholder="Explain clearly why you need access..."></textarea>
+              <div class="form-hint">Patients will see this purpose. Be clear and professional.</div>
+            </div>
+
+            <div class="row gx-3 mb-3">
+              <div class="col-sm-6">
+                <label class="form-label">Duration</label>
+                <select name="duration_days" class="form-select">
+                  <option value="1">1 day</option>
+                  <option value="7" selected>7 days</option>
+                  <option value="30">30 days</option>
+                  <option value="90">90 days</option>
+                  <option value="180">180 days</option>
+                  <option value="365">1 year</option>
+                </select>
+                <div class="form-hint">Consent expires automatically.</div>
+              </div>
+
+              <div class="col-sm-6 d-flex align-items-end">
+                <div class="form-check mt-3 mt-sm-0">
+                  <input class="form-check-input" type="checkbox" name="emergency" id="emergency">
+                  <label class="form-check-label" for="emergency">Emergency access requested</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn-primary px-4">Send Request</button>
+              <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- Tips box -->
+      <div class="card shadow-sm mt-3 tips-card">
+        <div class="card-body">
+          <h6 class="tips-title">Tips for Faster Approval</h6>
+          <ul class="tips-list">
+            <li>Write a clear medical reason (e.g., “review MRI results for pre-surgery evaluation”)</li>
+            <li>Request only the needed duration</li>
+            <li>Emergency should be used only when clinically required</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Recent requests -->
+    <div class="right-panel">
+      <div class="card shadow-sm requests-card">
+        <div class="card-body">
+          <h5 class="section-title mb-3">Recent Requests</h5>
+
+{% if recent %}
+<div class="list-group">
+  {% for c in recent %}
+  <div class="list-group-item py-3">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <div>
+        <div class="fw-semibold">{{ c.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+        <div class="small text-muted">
+          Duration: {{ c.requested_duration_days }} days
+          {% if c.emergency %} · <span class="text-danger">Emergency</span>{% endif %}
+        </div>
+      </div>
+
+      <div>
+        <span class="badge 
+          {% if (c.status or 'pending')=='approved' %} bg-success
+          {% elif (c.status or 'pending')=='pending' %} bg-warning text-dark
+          {% elif (c.status or 'pending')=='denied' %} bg-danger
+          {% elif (c.status or 'pending')=='revoked' %} bg-secondary
+          {% endif %}">
+          {{ (c.status or 'pending') | capitalize }}
+        </span>
+      </div>
+    </div>
+
+    {% if c.approved_until %}
+    <div class="small text-muted">Approved until: {{ c.approved_until.strftime('%Y-%m-%d %H:%M') }}</div>
+    {% endif %}
+
+    <div class="mt-2 small">
+      <strong>Purpose:</strong> {{ c.purpose }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="text-muted">No previous requests.</p>
+{% endif %}
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* Layout */
+  .layout {
+    display: grid;
+    gap: 1.5rem;
+  }
+  @media (min-width: 992px) {
+    .layout {
+      grid-template-columns: 1.2fr 1fr;
+    }
+  }
+
+  /* Typography & spacing */
+  .page-title { font-size: 1.75rem; font-weight: 700; margin-bottom: .2rem; }
+  .page-subtitle { font-size: .95rem; color: #6c757d; }
+  .highlight { color: #0d6efd; font-weight: 600; }
+  .dot { margin: 0 .5rem; }
+  .section-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 1rem; }
+
+  .form-hint { font-size: .85rem; color: #6c757d; margin-top: .2rem; }
+  .btn-row { display: flex; gap: .75rem; margin-top: .75rem; }
+
+  /* Recent Requests */
+  .table-container {
+    border: 1px solid #e2e6ea;
+    border-radius: 10px;
+    overflow: hidden;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .purpose-row {
+    background: #fafbfd;
+    font-size: .9rem;
+    color: #495057;
+  }
+  .purpose-row td {
+    padding-top: .35rem;
+  }
+
+  .tips-title { color: #6c757d; font-weight: 600; margin-bottom: .5rem; }
+  .tips-list { padding-left: 1.25rem; font-size: .9rem; color: #555; }
+  .list-group-item {
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .list-group-item:hover {
+    background: #f7faff;
+  }
+</style>
+
+<script>
+  (function () {
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
+{% endblock %}

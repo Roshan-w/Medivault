@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Add Prescription - MediVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container" style="max-width: 800px;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 class="form-title">Write Prescription</h2>
+            <p style="color: var(--text-color);">
+                Patient: <strong>{{ patient.name }}</strong> | ID: {{ patient.govt_id }}
+            </p>
+            <p style="color: var(--text-color); font-size: 0.9rem;">
+                Doctor: Dr. {{ doctor.name }} | {{ doctor.specialization }}
+            </p>
+        </div>
+
+        <form method="POST" class="form">
+            <div class="form-group">
+                <label for="prescription_date">Prescription Date *</label>
+                <input type="date" id="prescription_date" name="prescription_date" required 
+                       value="{{ today }}" max="{{ today }}">
+            </div>
+
+            <div class="form-group">
+                <label for="diagnosis">Diagnosis *</label>
+                <input type="text" id="diagnosis" name="diagnosis" required 
+                       placeholder="e.g., Hypertension, Type 2 Diabetes, Common Cold">
+            </div>
+
+            <div class="form-group">
+                <label for="medications">Medications *</label>
+                <textarea id="medications" name="medications" rows="8" required 
+                          placeholder="List medications with dosage and frequency:&#10;&#10;1. Amlodipine 5mg - Once daily after breakfast&#10;2. Metformin 500mg - Twice daily before meals&#10;3. Vitamin D3 60,000 IU - Weekly on Sunday"></textarea>
+                <small style="color: var(--text-color); display: block; margin-top: 0.5rem;">
+                    💡 Tip: List each medication on a new line with dosage and timing
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="instructions">Additional Instructions</label>
+                <textarea id="instructions" name="instructions" rows="5" 
+                          placeholder="Additional instructions for the patient:&#10;&#10;- Take medications as prescribed&#10;- Monitor blood pressure daily&#10;- Follow up in 2 weeks&#10;- Maintain healthy diet&#10;- Exercise 30 minutes daily"></textarea>
+            </div>
+
+            <div class="prescription-preview" style="background-color: var(--light-color); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <h3 style="color: var(--dark-color); margin-bottom: 1rem; font-size: 1.1rem;">
+                    📋 Prescription Summary
+                </h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <strong>Hospital/Clinic:</strong> {{ doctor.hospital }}
+                    </div>
+                    <div>
+                        <strong>License No:</strong> {{ doctor.license_number }}
+                    </div>
+                    <div>
+                        <strong>Patient Blood Group:</strong> {{ patient.blood_group or 'Not specified' }}
+                    </div>
+                    <div>
+                        <strong>Patient Phone:</strong> {{ patient.phone }}
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 1;">
+                    ✍️ Save Prescription
+                </button>
+                <a href="{{ url_for('view_patient', patient_id=patient.id) }}" class="btn btn-secondary" style="flex: 1; text-align: center;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+        <div style="margin-top: 2rem; padding: 1rem; background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px;">
+            <p style="color: #92400e; font-size: 0.9rem; margin: 0;">
+                ⚠️ <strong>Important:</strong> This prescription will be added to the patient's permanent medical record and will be visible to the patient immediately.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set today's date as default
+    document.getElementById('prescription_date').valueAsDate = new Date();
+    
+    // Auto-resize textareas
+    document.querySelectorAll('textarea').forEach(textarea => {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    });
+</script>
+{% endblock %}

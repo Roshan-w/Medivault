@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Record - MediVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="upload-container">
+        <div class="form-container">
+            <h2 class="form-title">Upload Medical Record</h2>
+            <form method="POST" enctype="multipart/form-data" class="form">
+                <div class="form-group">
+                    <label for="record_type">Record Type *</label>
+                    <select id="record_type" name="record_type" required>
+                        <option value="">Select Record Type</option>
+                        <option value="Lab Report">Lab Report</option>
+                        <option value="X-Ray">X-Ray</option>
+                        <option value="MRI">MRI Scan</option>
+                        <option value="CT Scan">CT Scan</option>
+                        <option value="Ultrasound">Ultrasound</option>
+                        <option value="ECG">ECG/EKG</option>
+                        <option value="Prescription">Prescription</option>
+                        <option value="Discharge Summary">Discharge Summary</option>
+                        <option value="Vaccination">Vaccination Record</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="title">Title *</label>
+                    <input type="text" id="title" name="title" required 
+                           placeholder="e.g., Blood Test - Annual Checkup">
+                </div>
+
+                <div class="form-group">
+                    <label for="test_date">Test/Procedure Date *</label>
+                    <input type="date" id="test_date" name="test_date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description (Optional)</label>
+                    <textarea id="description" name="description" rows="4" 
+                              placeholder="Additional notes or details about this record"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="file">Upload File *</label>
+                    <div class="file-upload-area" onclick="document.getElementById('file').click()">
+                        <div class="upload-icon">📁</div>
+                        <p><strong>Click to upload</strong> or drag and drop</p>
+                        <p style="font-size: 0.9rem; color: #6b7280; margin-top: 0.5rem;">
+                            PDF, JPG, PNG (Max 16MB)
+                        </p>
+                    </div>
+                    <input type="file" id="file" name="file" required accept=".pdf,.jpg,.jpeg,.png">
+                    <p id="file-name" style="margin-top: 1rem; color: var(--primary-color); font-weight: 600;"></p>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Upload Record</button>
+            </form>
+
+            <div class="form-footer">
+                <p><a href="{{ url_for('dashboard') }}">← Back to Dashboard</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('file').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name;
+        if (fileName) {
+            document.getElementById('file-name').textContent = '✓ Selected: ' + fileName;
+        }
+    });
+</script>
+{% endblock %}

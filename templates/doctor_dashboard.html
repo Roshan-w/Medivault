@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Dashboard - MediVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header">
+        <h2>Doctor Portal - Dr. {{ doctor.name }}</h2>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="info-card">
+            <h3>Your Information</h3>
+            <div class="info-item">
+                <span class="info-label">Specialization:</span>
+                <span class="info-value">{{ doctor.specialization or 'General Medicine' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">License Number:</span>
+                <span class="info-value">{{ doctor.license_number or 'N/A' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Hospital:</span>
+                <span class="info-value">{{ doctor.hospital or 'Not specified' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ doctor.email }}</span>
+            </div>
+        </div>
+
+        <div class="stats-card">
+            <h3>Quick Actions</h3>
+            <a href="{{ url_for('search_patient') }}" class="btn btn-primary btn-block" style="margin-bottom: 1rem;">
+                🔍 Search Patient Records
+            </a>
+            <div style="padding: 1.5rem; background-color: var(--light-color); border-radius: 8px; text-align: center;">
+                <p style="color: var(--text-color); font-weight: 600;">
+                    Access patient medical histories securely
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="records-section">
+        <h3>About Doctor Portal</h3>
+        <div style="line-height: 1.8; color: var(--text-color);">
+            <p><strong>Features Available:</strong></p>
+            <ul style="margin: 1rem 0 1rem 2rem;">
+                <li>Search patients by Government ID, name, or email</li>
+                <li>View complete medical history with proper authorization</li>
+                <li>Access lab reports, imaging results, and prescriptions</li>
+                <li>All access is logged for security and compliance</li>
+            </ul>
+            <p style="margin-top: 1rem;">
+                <strong>Privacy Notice:</strong> All patient data access is monitored and logged. 
+                Only access records for patients under your direct care.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

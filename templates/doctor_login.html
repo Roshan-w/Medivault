@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Login - MediVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2 class="form-title">Doctor Portal Login</h2>
+        <p style="text-align: center; color: var(--text-color); margin-bottom: 2rem;">
+            Access patient records securely with proper authorization
+        </p>
+        <form method="POST" class="form">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required 
+                       placeholder="doctor@hospital.com">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required 
+                       placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Login to Doctor Portal</button>
+        </form>
+
+        <div class="form-footer">
+             <p class="text-center mt-3">
+                Don’t have an account? <a href="{{ url_for('doctor_register') }}">Register here</a>
+            </p>
+            <p></p>
+            <p>Patient? <a href="{{ url_for('login') }}">Patient Login</a></p>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #6b7280;">
+               
+            </p>
+           
+
+        </div>
+    </div>
+</div>  
+{% endblock %}

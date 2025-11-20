@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Search Patient - MediVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2 class="form-title">Search Patient Records</h2>
+        <form method="POST" class="form">
+            <div class="form-group">
+                <label for="search_term">Search by Government ID, Name, or Email</label>
+                <input type="text" id="search_term" name="search_term" required 
+                       placeholder="Enter patient ID, name, or email">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">🔍 Search</button>
+        </form>
+    </div>
+
+    {% if searched %}
+        <div class="search-results">
+            <h3 style="margin-bottom: 1.5rem;">Search Results</h3>
+            {% if patients %}
+                {% for patient in patients %}
+                <div class="patient-card">
+                    <div class="patient-info">
+                        <h4>{{ patient.name }}</h4>
+                        <p><strong>Government ID:</strong> {{ patient.govt_id }}</p>
+                        <p><strong>DOB:</strong> {{ patient.dob.strftime('%B %d, %Y') }} | <strong>Blood Group:</strong> {{ patient.blood_group or 'N/A' }}</p>
+                        <p><strong>Contact:</strong> {{ patient.email }} | {{ patient.phone }}</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('view_patient', patient_id=patient.id) }}" class="btn btn-primary">
+                            View Records
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>No patients found matching your search criteria.</p>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

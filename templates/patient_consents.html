@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Consents - MediVault{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <h2 class="mb-4">Manage Access Consents</h2>
+
+    <!-- Pending Requests -->
+    <div class="consent-section">
+        <h3>Pending Requests</h3>
+        {% if pending %}
+            <table class="consent-table">
+                <thead>
+                    <tr>
+                        <th>Requested</th>
+                        <th>Doctor</th>
+                        <th>Hospital</th>
+                        <th>Purpose</th>
+                        <th>Duration</th>
+                        <th>Emergency</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in pending %}
+                    <tr>
+                        <td>{{ c.created_at.strftime('%Y-%m-%d %H:%M') if c.created_at else '—' }}</td>
+                        <td>{{ c.doctor.name if c.doctor else '—' }}</td>
+                        <td>{{ c.doctor.hospital if (c.doctor and c.doctor.hospital) else '—' }}</td>
+                        <td class="text-break" style="max-width: 420px">{{ c.purpose }}</td>
+                        <td>{{ c.requested_duration_days }} days</td>
+                        <td>
+                            {% if c.emergency %}
+                            <span class="badge bg-danger">Yes</span>
+                            {% else %}
+                            <span class="badge bg-secondary">No</span>
+                            {% endif %}
+                        </td>
+                        <td class="d-flex gap-2">
+                            <form method="post" action="{{ url_for('approve_consent', consent_id=c.id) }}">
+                            <button class="btn btn-sm btn-success" type="submit">Approve</button>
+                            </form>
+                            <form method="post" action="{{ url_for('deny_consent', consent_id=c.id) }}">
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Deny</button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">No pending requests.</div>
+        {% endif %}
+    </div>
+
+    <!-- Active Consents -->
+    <div class="consent-section">
+        <h3>Active Consents</h3>
+        {% if active %}
+            <table class="consent-table">
+                <thead>
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Hospital</th>
+                        <th>Purpose</th>
+                        <th>Approved Until</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in active %}
+                        <tr>
+                        <td>{{ c.doctor.name if c.doctor else '—' }}</td>
+                        <td>{{ c.doctor.hospital if (c.doctor and c.doctor.hospital) else '—' }}</td>
+                        <td class="text-break" style="max-width: 420px">{{ c.purpose }}</td>
+                        <td>{{ c.approved_until.strftime('%Y-%m-%d %H:%M') if c.approved_until else '—' }}</td>
+                        <td>
+                            <form method="post" action="{{ url_for('revoke_consent', consent_id=c.id) }}">
+                            <button class="btn btn-sm btn-warning" type="submit">Revoke</button>
+                            </form>
+                        </td>
+                        </tr>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">No active consents.</div>
+        {% endif %}
+    </div>
+
+    <!-- History -->
+    <div class="consent-section">
+        <h3>History</h3>
+        {% if history %}
+            <table class="consent-table">
+                <thead>
+                    <tr>
+                        <th>Updated</th>
+                        <th>Status</th>
+                        <th>Doctor</th>
+                        <th>Hospital</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in history %}
+                        <tr>
+                        <td>{{ (c.updated_at or c.created_at).strftime('%Y-%m-%d %H:%M') if (c.updated_at or c.created_at) else '—' }}</td>
+                        <td><span class="badge bg-secondary">{{ (c.status or 'pending')|capitalize }}</span></td>
+                        <td>{{ c.doctor.name if c.doctor else '—' }}</td>
+                        <td>{{ c.doctor.hospital if (c.doctor and c.doctor.hospital) else '—' }}</td>
+                        <td class="text-break" style="max-width: 420px">{{ c.purpose }}</td>
+                        </tr>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">No history available.</div>
+        {% endif %}
+    </div>
+
+    <div style="margin-top: 20px;">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+    </div>
+
+</div>
+
+<style>
+    .consent-section {
+        margin-bottom: 40px;
+    }
+
+    .consent-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 6px;
+        overflow: hidden;
+        font-size: 0.95rem;
+    }
+
+    .consent-table th, .consent-table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .consent-table thead {
+        background: #f5f7fa;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    .consent-table tbody tr:hover {
+        background: #f3f9ff;
+    }
+
+    .empty-state {
+        padding: 10px 0;
+        font-style: italic;
+        color: #777;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+    }
+
+    .badge-danger {
+        background: #ff8a80;
+        color: #600;
+    }
+
+    .badge-secondary {
+        background: #d0d0d0;
+        color: #333;
+    }
+</style>
+{% endblock %}
